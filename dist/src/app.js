@@ -9,6 +9,16 @@ const auth_1 = require("./middleware/auth");
 const months_1 = require("./routes/months");
 const habits_1 = require("./routes/habits");
 exports.app = (0, express_1.default)();
+exports.app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+        return;
+    }
+    next();
+});
 exports.app.use(express_1.default.json());
 exports.app.get('/health', (_, res) => res.json({ status: 'ok' }));
 exports.app.use(auth_1.requireAuth);
