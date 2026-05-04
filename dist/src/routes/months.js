@@ -79,3 +79,18 @@ exports.monthsRouter.post('/', async (req, res) => {
         res.status(500).json({ error: 'Failed to create month' });
     }
 });
+// DELETE /months/:id
+exports.monthsRouter.delete('/:id', async (req, res) => {
+    const userId = req.userId;
+    const monthId = req.params.id;
+    try {
+        await dynamo_1.db.send(new lib_dynamodb_1.DeleteCommand({
+            TableName: dynamo_1.TABLE,
+            Key: { PK: `USER#${userId}`, SK: `MONTH#${monthId}` }
+        }));
+        res.json({ success: true });
+    }
+    catch (e) {
+        res.status(500).json({ error: 'Failed to delete month' });
+    }
+});

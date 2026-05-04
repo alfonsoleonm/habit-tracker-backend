@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { PutCommand, QueryCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
+import { PutCommand, QueryCommand, GetCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import { db, TABLE } from '../db/dynamo';
 
 export const monthsRouter = Router();
@@ -80,5 +80,20 @@ monthsRouter.post('/', async (req, res) => {
         res.status(201).json(item);
     } catch (e) {
         res.status(500).json({ error: 'Failed to create month' });
+    }
+});
+
+// DELETE /months/:id
+monthsRouter.delete('/:id', async (req, res) => {
+    const userId = (req as any).userId;
+    const monthId = req.params.id;
+    try {
+        await db.send(new DeleteCommand({
+            TableName: TABLE,
+            Key: { PK: `USER#${userId}`, SK: `MONTH#${monthId}` }
+        }));
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: 'Failed to delete month' });
     }
 });
